@@ -28,12 +28,12 @@ data = {'format' : 'json',
         'api_key': apikey}
 while keeprunning:
 
+    logging.info('starting loop {i}'.format(i=nloop))
     item_list = requests.get(list_url, params=data)
     if item_list.status_code != 200:
         logging.warn('request error: http code {code}'.format(code=item_list.status_code))
         keeprunning = False
     else:
-        logging.info('loop {i}'.format(i=nloop))
         json_data = item_list.json()
 
         items = json_data['list']['item']
