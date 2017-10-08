@@ -1,46 +1,44 @@
 import requests
-import json
 import sqlite3
 import time
 import logging
 
-logging.basicConfig(level=logging.INFO, handlers=[logging.FileHandler('fooditem_db.log'), logging.StreamHandler()])
+logging.basicConfig(level=logging.INFO, handlers=[logging.FileHandler('nutrient_db.log'), logging.StreamHandler()])
 
 apikey = '0nDIJuT0aCiNbIiwxVIpAWRUKauc4EdLNQgSjUc1'
 
-list_url = 'https://api.nal.usda.gov/ndb/list'
-nitems = 450
+list_url = 'https://api.nal.usda.gov/ndb/report'
+nitems = 900
 keeprunning = True
 
 dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
 
-c.execute('SELECT id from items')
-offset = len(c.fetchall())
+item_ids = c.execute("SELECT ids from items")
 
-nloop = 0
+nitem = 1
 data = {'format' : 'json',
-        'lt'     : 'f',
-        'sort'   : 'n',
-        'max'    : nitems,
-        'offset' : offset,
+        'type'   : 'b'
+        'ndbno'  : '',
         'api_key': apikey}
 while keeprunning:
 
-    item_list = requests.get(list_url, params=data)
-    if item_list.status_code != 200:
+    data['ndbno'] = item_ids[nitem]
+    nutrient_report = requests(url, params=data)
+    if nutrient_report.status_code != 200:
         logging.warn('request error: http code {code}'.format(code=item_list.status_code))
         keeprunning = False
     else:
-        logging.info('loop {i}'.format(i=nloop))
-        json_data = item_list.json()
+        logging.info('item {i}'.format(i=nitem))
+        json_data = nutrient_report.json()
 
-        items = json_data['list']['item']
-        item_ids = [(int(it['id']), it['name']) for it in items]
-        item_ids = dict(item_ids)
+        #items = json_data['list']['item']
+        #item_ids = [(int(it['id']), it['name']) for it in items]
+        #item_ids = dict(item_ids)
+        #nutrient_data = [()]
 
-        for key, val in item_ids.items():
+        for data in nutrient_data
             try:
                 c.execute('INSERT OR IGNORE INTO items VALUES (?, ?);', (key, val))
             except Exception as e:
