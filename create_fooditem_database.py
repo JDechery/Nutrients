@@ -3,6 +3,7 @@ import json
 import sqlite3
 import time
 import logging
+import sys
 
 logging.basicConfig(level=logging.INFO, handlers=[logging.FileHandler('fooditem_db.log'), logging.StreamHandler()])
 
@@ -26,6 +27,7 @@ data = {'format' : 'json',
         'max'    : nitems,
         'offset' : offset,
         'api_key': apikey}
+<<<<<<< HEAD
 while keeprunning:
 
     logging.info('starting loop {i}'.format(i=nloop))
@@ -47,12 +49,36 @@ while keeprunning:
                 logging.error('database operation failed')
                 logging.error(str(e))
                 break
+=======
+>>>>>>> nutrient_db
 
+try:
+    while keeprunning:
+        item_list = requests.get(list_url, params=data)
+        if item_list.status_code != 200:
+            logging.warn('request error: http code {code}'.format(code=item_list.status_code))
+            keeprunning = False
+        else:
+            logging.info('loop {i}'.format(i=nloop))
+            json_data = item_list.json()
+
+            items = json_data['list']['item']
+            item_ids = [(int(it['id']), it['name']) for it in items]
+            item_ids = dict(item_ids)
+
+            for key, val in item_ids.items():
+                try:
+                    c.execute('INSERT OR IGNORE INTO food VALUES (?, ?);', (key, val))
+                except Exception as e:
+                    logging.error('database operation failed')
+                    logging.error(str(e))
+                    break
+
+        conn.commit()
+        nloop += 1
+        data['offset'] += nitems
+        time.sleep(3600)#hard coded rate limiting; max 1000/hour
+except KeyboardInterrupt:
     conn.commit()
-    nloop += 1
-    data['offset'] += nitems
-    time.sleep(3600)#hard coded rate limiting; max 1000/hour
-
-
-conn.commit()
-conn.close()
+    conn.close()
+    sys.exit(0)

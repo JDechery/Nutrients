@@ -177,3 +177,72 @@ INFO:root:loop 18
 INFO:root:starting loop 0
 INFO:root:starting loop 0
 INFO:root:starting loop 1
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+INFO:root:starting loop 2
+INFO:root:starting loop 3
+INFO:root:starting loop 4
+INFO:root:starting loop 5
+INFO:root:starting loop 6
+INFO:root:starting loop 7
+INFO:root:starting loop 8
+INFO:root:starting loop 9
+INFO:root:starting loop 10
+INFO:root:starting loop 11
+INFO:root:starting loop 12
+INFO:root:starting loop 13
+INFO:root:starting loop 14
+INFO:root:starting loop 15
+INFO:root:starting loop 16
+INFO:root:starting loop 17
+INFO:root:starting loop 18
+INFO:root:starting loop 19
+INFO:root:starting loop 20
+INFO:root:starting loop 21
+INFO:root:starting loop 22
+INFO:root:starting loop 23
+INFO:root:starting loop 24
+INFO:root:starting loop 25
+INFO:root:starting loop 26
+INFO:root:starting loop 27
+INFO:root:starting loop 28
+<<<<<<< HEAD
+>>>>>>> nutrient_db
+=======
+INFO:root:loop 0
+INFO:root:loop 1
+INFO:root:loop 2
+INFO:root:loop 3
+INFO:root:loop 4
+INFO:root:loop 5
+INFO:root:loop 6
+INFO:root:loop 7
+INFO:root:loop 8
+INFO:root:loop 9
+INFO:root:loop 10
+INFO:root:loop 11
+INFO:root:loop 12
+INFO:root:loop 13
+INFO:root:loop 14
+INFO:root:loop 15
+INFO:root:loop 16
+INFO:root:loop 17
+INFO:root:loop 18
+INFO:root:loop 19
+INFO:root:loop 20
+INFO:root:loop 21
+INFO:root:loop 22
+INFO:root:loop 23
+INFO:root:loop 24
+INFO:root:loop 25
+INFO:root:loop 26
+INFO:root:loop 27
+INFO:root:loop 28
+INFO:root:loop 29
+INFO:root:loop 30
+INFO:root:loop 31
+INFO:root:loop 32
+>>>>>>> nutrient_db
+=======
+>>>>>>> automate_fooditem_collection
