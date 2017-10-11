@@ -27,31 +27,6 @@ data = {'format' : 'json',
         'max'    : nitems,
         'offset' : offset,
         'api_key': apikey}
-<<<<<<< HEAD
-<<<<<<< HEAD
-while keeprunning:
-
-    logging.info('starting loop {i}'.format(i=nloop))
-    item_list = requests.get(list_url, params=data)
-    if item_list.status_code != 200:
-        logging.warn('request error: http code {code}'.format(code=item_list.status_code))
-        keeprunning = False
-    else:
-        json_data = item_list.json()
-
-        items = json_data['list']['item']
-        item_ids = [(int(it['id']), it['name']) for it in items]
-        item_ids = dict(item_ids)
-
-        for key, val in item_ids.items():
-            try:
-                c.execute('INSERT OR IGNORE INTO items VALUES (?, ?);', (key, val))
-            except Exception as e:
-                logging.error('database operation failed')
-                logging.error(str(e))
-                break
-=======
->>>>>>> nutrient_db
 =======
 >>>>>>> nutrient_db
 
