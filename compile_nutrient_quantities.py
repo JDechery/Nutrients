@@ -14,13 +14,16 @@ keeprunning = True
 dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
-itemrows = c.execute("SELECT * from food")
+itemrows = c.execute("SELECT * from food").fetchall()
 data = [['ndbno', '0'], ['format', 'json'], ['type', 'f'], ['api_key', apikey]]
 
 insert_query = 'INSERT OR IGNORE INTO quantity (food_id, nutrient_id, value, units) VALUES (?, ?, ?, ?)'
+loopid = 0
 try:
     while keeprunning:
-        item_row = itemrows.fetchone()
+        item_row = itemrows[loopid]
+        loopid += 1
+        logging.info('starting item {i} {j}'.format(i=item_row[0], j=item_row[1]))
         ndbno = item_row[0]
         if len(str(ndbno))<5:
                 padsize = 5-len(str(ndbno))
@@ -33,7 +36,7 @@ try:
             logging.warn('request error: http code {code}'.format(code=item_list.status_code))
             keeprunning = False
         else:
-            logging.info('item {i}'.format(i=nitem))
+            #logging.info('item {i}'.format(i=ndbno))
             json_data = nutrient_report.json()
             json_data = json_data['report']['food']
             foodname = json_data['name']
@@ -47,7 +50,7 @@ try:
         conn.commit()
         #data['offset'] += nitems
         time.sleep(10)#hard coded rate limiting; max 1000/hour
-except KeyboardInterrupt
+except KeyboardInterrupt:
     conn.commit()
     conn.close()
     sys.exit(0)
