@@ -28,6 +28,7 @@ data = {'format' : 'json',
         'offset' : offset,
         'api_key': apikey}
 <<<<<<< HEAD
+<<<<<<< HEAD
 while keeprunning:
 
     logging.info('starting loop {i}'.format(i=nloop))
@@ -49,6 +50,8 @@ while keeprunning:
                 logging.error('database operation failed')
                 logging.error(str(e))
                 break
+=======
+>>>>>>> nutrient_db
 =======
 >>>>>>> nutrient_db
 

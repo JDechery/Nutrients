@@ -179,7 +179,10 @@ INFO:root:starting loop 0
 INFO:root:starting loop 1
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> nutrient_db
 INFO:root:starting loop 2
 INFO:root:starting loop 3
 INFO:root:starting loop 4
@@ -208,8 +211,11 @@ INFO:root:starting loop 26
 INFO:root:starting loop 27
 INFO:root:starting loop 28
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> nutrient_db
 =======
+=======
+>>>>>>> nutrient_db
 INFO:root:loop 0
 INFO:root:loop 1
 INFO:root:loop 2
@@ -243,6 +249,9 @@ INFO:root:loop 29
 INFO:root:loop 30
 INFO:root:loop 31
 INFO:root:loop 32
+<<<<<<< HEAD
 >>>>>>> nutrient_db
 =======
 >>>>>>> automate_fooditem_collection
+=======
+>>>>>>> nutrient_db
