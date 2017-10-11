@@ -15,7 +15,7 @@ dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
 itemrows = c.execute("SELECT * from food")
-data = [['ndbno', '0'], ['format', 'json'], ['type', 'b'], ['api_key', apikey]]
+data = [['ndbno', '0'], ['format', 'json'], ['type', 'f'], ['api_key', apikey]]
 
 insert_query = 'INSERT OR IGNORE INTO quantity (food_id, nutrient_id, value, units) VALUES (?, ?, ?, ?)'
 try:
