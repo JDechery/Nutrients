@@ -32,8 +32,11 @@ loopid = quantityrows[-1][0]#ndbno of last food requested
 insert_query = 'INSERT OR IGNORE INTO quantity (food_id, nutrient_id, value, units) VALUES (?, ?, ?, ?)'
 try:
     while keeprunning:
-        last_item_idx = [row[0] for row in itemrows].index(loopid)
-        itemrow = itemrows[last_item_idx+1]
+        if loopid == quantityrows[-1][0]:
+            last_item_idx = [row[0] for row in itemrows].index(loopid)
+            itemrow = itemrows[last_item_idx+1]
+        else:
+            itemrow = itemrows[loopid]
         loopid += 1
         logging.info('starting item {i} {j}'.format(i=itemrow[0], j=itemrow[1]))
         ndbno = itemrow[0]
