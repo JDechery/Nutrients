@@ -4,33 +4,41 @@ import time
 import logging
 import sys
 
+def format_ndbno(no):
+    if len(str(no))<5:
+        padsize = 5-len(str(no))
+        pad = ['0' for _ in range(padsize)]
+        ndbno = ''.join(pad+list(str(no)))
+    else:
+        ndbno = str(no)
+    return ndbno
+
+
 logging.basicConfig(level=logging.INFO, handlers=[logging.FileHandler('nutrient_db.log'), logging.StreamHandler()])
 
 apikey = '0nDIJuT0aCiNbIiwxVIpAWRUKauc4EdLNQgSjUc1'
 
 report_url = 'https://api.nal.usda.gov/ndb/reports'
 keeprunning = True
+data = [['ndbno', '0'], ['format', 'json'], ['type', 'f'], ['api_key', apikey]]
 
 dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
 itemrows = c.execute("SELECT * from food").fetchall()
-data = [['ndbno', '0'], ['format', 'json'], ['type', 'f'], ['api_key', apikey]]
+quantityrows = c.execute("SELECT food_id from quantity").fetchall()
+loopid = quantityrows[-1][0]#ndbno of last food requested
 
 insert_query = 'INSERT OR IGNORE INTO quantity (food_id, nutrient_id, value, units) VALUES (?, ?, ?, ?)'
-loopid = 0
 try:
     while keeprunning:
-        item_row = itemrows[loopid]
+        last_item_idx = [row[0] for row in itemrows].index(loopid)
+        itemrow = itemrows[last_item_idx+1]
         loopid += 1
-        logging.info('starting item {i} {j}'.format(i=item_row[0], j=item_row[1]))
-        ndbno = item_row[0]
-        if len(str(ndbno))<5:
-                padsize = 5-len(str(ndbno))
-                pad = ['0' for _ in range(padsize)]
-                ndbno = ''.join(pad+list(str(ndbno)))
+        logging.info('starting item {i} {j}'.format(i=itemrow[0], j=itemrow[1]))
+        ndbno = itemrow[0]
+        data[0][1] = format_ndbno(ndbno)
 
-        data[0][1] = ndbno
         nutrient_report = requests.get(report_url, params=data)
         if nutrient_report.status_code != 200:
             logging.warn('request error: http code {code}'.format(code=item_list.status_code))
@@ -48,9 +56,11 @@ try:
                 c.execute(insert_query, values)
 
         conn.commit()
-        #data['offset'] += nitems
-        time.sleep(10)#hard coded rate limiting; max 1000/hour
+        time.sleep(8)#hard coded rate limiting; max 1000/hour
 except KeyboardInterrupt:
     conn.commit()
     conn.close()
     sys.exit(0)
+else:
+    conn.commit()
+    conn.close()
