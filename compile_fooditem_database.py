@@ -53,7 +53,7 @@ try:
         conn.commit()
         nloop += 1
         data['offset'] += nitems
-        time.sleep(nitem/(400/3600))#hard coded rate limiting; max 400/hour
+        time.sleep(nitems/(400/3600))#hard coded rate limiting; max 400/hour
 except KeyboardInterrupt:
     conn.commit()
     conn.close()
