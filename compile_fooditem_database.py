@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO, handlers=[logging.FileHandler('fooditem_
 apikey = '0nDIJuT0aCiNbIiwxVIpAWRUKauc4EdLNQgSjUc1'
 
 list_url = 'https://api.nal.usda.gov/ndb/list'
-nitems = 450
+nitems = 100
 keeprunning = True
 
 dbfile = 'F:/Data/nutrients_database.sqlite'
@@ -21,14 +21,12 @@ c.execute('SELECT id from items')
 offset = len(c.fetchall())
 
 nloop = 0
-data = {'format' : 'json',
-        'lt'     : 'f',
-        'sort'   : 'n',
-        'max'    : nitems,
-        'offset' : offset,
+data = {'format': 'json',
+        'lt': 'f',
+        'sort': 'n',
+        'max': nitems,
+        'offset': offset,
         'api_key': apikey}
-=======
->>>>>>> nutrient_db
 
 try:
     while keeprunning:
@@ -55,7 +53,7 @@ try:
         conn.commit()
         nloop += 1
         data['offset'] += nitems
-        time.sleep(3600)#hard coded rate limiting; max 1000/hour
+        time.sleep(nitem/(400/3600))#hard coded rate limiting; max 400/hour
 except KeyboardInterrupt:
     conn.commit()
     conn.close()
