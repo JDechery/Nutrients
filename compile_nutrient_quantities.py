@@ -4,8 +4,9 @@ import time
 import logging
 import sys
 
+
 def format_ndbno(no):
-    if len(str(no))<5:
+    if len(str(no)) < 5:
         padsize = 5-len(str(no))
         pad = ['0' for _ in range(padsize)]
         ndbno = ''.join(pad+list(str(no)))
@@ -25,29 +26,24 @@ data = [['ndbno', '0'], ['format', 'json'], ['type', 'f'], ['api_key', apikey]]
 dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
-itemrows = c.execute("SELECT * from food").fetchall()
-quantityrows = c.execute("SELECT food_id from quantity").fetchall()
-loopid = quantityrows[-1][0]#ndbno of last food requested
-
+itemrows = c.execute("SELECT * from food LEFT JOIN quantity ON food.ndbno = quantity.food_id WHERE quantity.food_id IS NULL").fetchall()
+# quantityrows = c.execute("SELECT food_id from quantity").fetchall()
+# loopid = quantityrows[-1][0]#ndbno of last food requested
+loopid = 0
 insert_query = 'INSERT OR IGNORE INTO quantity (food_id, nutrient_id, value, units) VALUES (?, ?, ?, ?)'
 try:
     while keeprunning:
-        if loopid == quantityrows[-1][0]:
-            last_item_idx = [row[0] for row in itemrows].index(loopid)
-            itemrow = itemrows[last_item_idx+1]
-        else:
-            itemrow = itemrows[loopid]
-        loopid += 1
+        itemrow = itemrows[loopid]
         logging.info('starting item {i} {j}'.format(i=itemrow[0], j=itemrow[1]))
         ndbno = itemrow[0]
         data[0][1] = format_ndbno(ndbno)
 
         nutrient_report = requests.get(report_url, params=data)
         if nutrient_report.status_code != 200:
-            logging.warn('request error: http code {code}'.format(code=item_list.status_code))
+            logging.warn('request error: http code {code}'.format(code=nutrient_report.status_code))
             keeprunning = False
         else:
-            #logging.info('item {i}'.format(i=ndbno))
+            # logging.info('item {i}'.format(i=ndbno))
             json_data = nutrient_report.json()
             json_data = json_data['report']['food']
             foodname = json_data['name']
@@ -58,8 +54,9 @@ try:
             for values in nutrient_data:
                 c.execute(insert_query, values)
 
+        loopid += 1
         conn.commit()
-        time.sleep(8)#hard coded rate limiting; max 1000/hour
+        time.sleep(8)  # hard coded rate limiting; max 1000/hour
 except KeyboardInterrupt:
     conn.commit()
     conn.close()
