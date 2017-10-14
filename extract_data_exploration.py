@@ -33,3 +33,5 @@ diffunits = quantities['units'].loc[quantities['nutrient_id']==255].unique()
 diffunits = quantities.groupby('nutrient_id')['units'].nunique()
 (diffunits==1).all()
 # each nutrient is reported with consistent units (thankfully). no conversion necessary
+
+pivotdf = quantities.pivot(index='ndbno', columns='nutrient_id', value='value')
