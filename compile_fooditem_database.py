@@ -17,7 +17,7 @@ dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
 
-c.execute('SELECT id from items')
+c.execute('SELECT ndbno from food')
 offset = len(c.fetchall())
 
 nloop = 0
