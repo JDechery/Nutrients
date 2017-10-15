@@ -27,8 +27,6 @@ data = {'format' : 'json',
         'max'    : nitems,
         'offset' : offset,
         'api_key': apikey}
-=======
->>>>>>> nutrient_db
 
 try:
     while keeprunning:

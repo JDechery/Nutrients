@@ -35,3 +35,4 @@ diffunits = quantities.groupby('nutrient_id')['units'].nunique()
 # each nutrient is reported with consistent units (thankfully). no conversion necessary
 
 pivotdf = quantities.pivot(index='ndbno', columns='nutrient_id', value='value')
+num_unreported = pivotdf.isnull().mean().plot('hist', bins=50)
