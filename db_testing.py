@@ -12,6 +12,4 @@ print(len(c.fetchall()))
 a = c.fetchone()
 print(a)
 
-
-
 conn.close()
