@@ -79,7 +79,8 @@ def convert_accuracy(raw_accuracy, null_accuracy):
 
 
 acc = {}
-for word in most_common_words:
-    gsrch.fit(predictors, targets[word])
-    acc[word] = (convert_accuracy(gsrch.best_score_, 1-targets[word].mean()), gsrch.best_estimator_)
-    print(word, acc[word][0])
+# for word in most_common_words:
+word = most_common_words[0]
+gsrch.fit(predictors, targets[word])
+acc[word] = (convert_accuracy(gsrch.best_score_, 1-targets[word].mean()), gsrch.best_estimator_)
+print(word, acc[word][0])
