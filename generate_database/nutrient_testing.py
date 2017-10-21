@@ -19,11 +19,9 @@ apikey = '0nDIJuT0aCiNbIiwxVIpAWRUKauc4EdLNQgSjUc1'
 # data['ndbno'] = '01009'
 # print(data)
 data = (('ndbno', '01009'), ('type', 'b'), ('format', 'json'), ('api_key', apikey))
-=======
 # data['ndbno'] = '01009' #example_item[0]
-data = ( ('ndbno','01009') , ('type','b') , ('format','json') , ('api_key', apikey) )
+data = (('ndbno', '01009'), ('type', 'b'), ('format', 'json'), ('api_key', apikey))
 print(data)
->>>>>>> nutrient_db
 
 # seen = set()
 # while True:
@@ -34,7 +32,6 @@ print(data)
 #     print(loc)
 #     print(r.status_code)
 nutrient_report = requests.get(report_url, params=data)
-=======
 
 nutrient_report = requests.get(report_url, params=data, allow_redirects=False)
 print(nutrient_report.url)
@@ -44,7 +41,7 @@ json_data = nutrient_report.json()
 # %% format nutrient data and insert into table
 print(json_data)
 
-subfields = ('ndbno','name','nutrients')
+subfields = ('ndbno', 'name', 'nutrients')
 subdata = dict((k, json_data['report']['food'][k]) for k in subfields)
 
 conn.close()
