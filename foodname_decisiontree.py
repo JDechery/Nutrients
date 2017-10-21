@@ -1,10 +1,12 @@
-"""Fit logistic model get predictive power of nutrients on food names."""
 import pandas as pd
 import sqlite3
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.cross_validation import train_test_split
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.decomposition import PCA
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedKFold
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.pipeline import Pipeline
 import numpy as np
 import matplotlib.pyplot as plt
 import re
@@ -17,9 +19,6 @@ foods = pd.read_sql_query('SELECT * from food', conn)
 nutrients = pd.read_sql_query('SELECT * from nutrient', conn)
 
 conn.close()
-
-# pivotdf = quantities.pivot_table(index='food_id', columns='nutrient_id', values='value', fill_value=0)
-# get most common food names
 
 
 def splitNameIntoWords(nameList):
@@ -51,31 +50,36 @@ for ndbno in foodNameDict:
             present[word].append(0)
 
 wordPresence = pd.DataFrame(data=present, index=foodNameDict.keys())
-wordPresence.mean().hist()
-plt.show()
 
 nutrient_amount = quantities.pivot_table(index='food_id', columns='nutrient_id', values='value', fill_value=0)
 combined_data = nutrient_amount.join(wordPresence, how='left')
+targets = combined_data[most_common_words]
+predictors = combined_data[nutrient_amount.columns]
 
-# %%
-# nut_train, nut_test, word_train, word_test = train_test_split(combined_data[nutrient_amount.columns], combined_data[most_common_words[0]], random_state=123456)
-predict_word = most_common_words[0]
-train_inds, test_inds = StratifiedShuffleSplit(n_splits=2, random_state=123456).split(np.zeros(len(combined_data)), combined_data[predict_word])
-nut_train, nut_test, word_train, word_test = combined_data[nutrient_amount.columns].iloc[train_inds[0]], \
-                                             combined_data[nutrient_amount.columns].iloc[train_inds[1]],  \
-                                             combined_data[predict_word].iloc[train_inds[0]],    \
-                                             combined_data[predict_word].iloc[train_inds[1]]
+# %% cross validated pipeline to find best boosted classifier for each word
+prepper = PCA()
+# estimator = LogisticRegression(penalty='l1', random_state=123456, max_iter=10, solver='saga', verbose=False, n_jobs=-1)
+classifier = GradientBoostingClassifier(random_state=123456)
+cv = StratifiedKFold(3)
+# param_grid = {'prepper__n_components': [75, 100], 'estimator__C': [.75, 1.]}
+param_grid = {'prepper__n_components': [100, 150],
+              'clf__n_estimators': [100, 200, 250],
+              'clf__learning_rate': [0.5, 1.0, 2.0],
+              'clf__max_depth': [1, 2]}
+pipe = Pipeline([('prepper', prepper), ('clf', classifier)])
+gsrch = GridSearchCV(estimator=pipe, param_grid=param_grid, scoring='accuracy', cv=cv)
 
-mms = MinMaxScaler()
-nut_train_scaled = mms.fit_transform(nut_train)
-nut_test_scaled = mms.transform(nut_test)
 
-logreg = LogisticRegression(penalty='l1', C=.25, random_state=123456, max_iter=1000, solver='saga', verbose=False, n_jobs=-1)
-logreg.fit(nut_train_scaled, word_train)
-# print('training: ', )
-# print('test: ', )
-print(predict_word)
-print(logreg.score(nut_train_scaled, word_train)-(1-word_train.mean()), logreg.score(nut_test_scaled, word_test)-(1-word_test.mean()))
-c = logreg.coef_
-plt.hist(np.ravel(c))
-plt.show()
+def convert_accuracy(raw_accuracy, null_accuracy):
+    """Convert sklearn accuracy value to null accuracy given by mean value of binary target."""
+    if not isinstance(raw_accuracy, list):
+        raw_accuracy = [raw_accuracy]
+    perc_accuracy = list(map(lambda x: (x - null_accuracy) / (1. - null_accuracy), raw_accuracy))
+    return perc_accuracy
+
+
+acc = {}
+for word in most_common_words:
+    gsrch.fit(predictors, targets[word])
+    acc[word] = (convert_accuracy(gsrch.best_score_, 1-targets[word].mean()), gsrch.best_estimator_)
+    print(word, acc[word][0])
