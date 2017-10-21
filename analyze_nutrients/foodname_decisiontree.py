@@ -36,7 +36,7 @@ wordcounts.index = wordcounts.index.map(str.lower)
 unfun_words = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to']
 wordcounts.drop(unfun_words, inplace=True)
 
-most_common_words = wordcounts[:100].index.unique()
+most_common_words = wordcounts[:25].index.unique()
 foodNameDict = dict(zip(foods['ndbno'], wordsInFoods))
 
 present = {}
@@ -62,9 +62,9 @@ prepper = PCA()
 classifier = GradientBoostingClassifier(random_state=123456)
 cv = StratifiedKFold(3)
 # param_grid = {'prepper__n_components': [75, 100], 'estimator__C': [.75, 1.]}
-param_grid = {'prepper__n_components': [100, 150],
-              'clf__n_estimators': [100, 200, 250],
-              'clf__learning_rate': [0.5, 1.0, 2.0],
+param_grid = {'prepper__n_components': [200],
+              'clf__n_estimators': [100, 150, 200],
+              'clf__learning_rate': [1.0],
               'clf__max_depth': [1, 2]}
 pipe = Pipeline([('prepper', prepper), ('clf', classifier)])
 gsrch = GridSearchCV(estimator=pipe, param_grid=param_grid, scoring='accuracy', cv=cv)
@@ -78,9 +78,9 @@ def convert_accuracy(raw_accuracy, null_accuracy):
     return perc_accuracy
 
 
+# %%
 acc = {}
-# for word in most_common_words:
-word = most_common_words[0]
-gsrch.fit(predictors, targets[word])
-acc[word] = (convert_accuracy(gsrch.best_score_, 1-targets[word].mean()), gsrch.best_estimator_)
-print(word, acc[word][0])
+for word in most_common_words:
+    gsrch.fit(predictors, targets[word])
+    acc[word] = (convert_accuracy(gsrch.best_score_, 1-targets[word].mean()), gsrch.best_estimator_)
+    print(word, acc[word][0])
