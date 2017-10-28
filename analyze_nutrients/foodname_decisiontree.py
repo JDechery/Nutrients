@@ -1,16 +1,13 @@
 import pandas as pd
 import sqlite3
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.decomposition import PCA
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedKFold
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.pipeline import Pipeline
-import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.metrics import f1_score, make_scorer
+from sklearn.ensemble import RandomForestClassifier
 import re
 import itertools
+import pickle
 dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 
@@ -56,31 +53,22 @@ combined_data = nutrient_amount.join(wordPresence, how='left')
 targets = combined_data[most_common_words]
 predictors = combined_data[nutrient_amount.columns]
 
-# %% cross validated pipeline to find best boosted classifier for each word
-prepper = PCA()
-# estimator = LogisticRegression(penalty='l1', random_state=123456, max_iter=10, solver='saga', verbose=False, n_jobs=-1)
-classifier = GradientBoostingClassifier(random_state=123456)
+# %% gridsearch for best random forest classifier (by f1_score)
+prepper = MinMaxScaler()
+classifier = RandomForestClassifier(n_jobs=-1, random_state=123456)
 cv = StratifiedKFold(3)
 # param_grid = {'prepper__n_components': [75, 100], 'estimator__C': [.75, 1.]}
-param_grid = {'prepper__n_components': [200],
-              'clf__n_estimators': [100, 150, 200],
-              'clf__learning_rate': [1.0],
-              'clf__max_depth': [1, 2]}
-pipe = Pipeline([('prepper', prepper), ('clf', classifier)])
-gsrch = GridSearchCV(estimator=pipe, param_grid=param_grid, scoring='accuracy', cv=cv)
-
-
-def convert_accuracy(raw_accuracy, null_accuracy):
-    """Convert sklearn accuracy value to null accuracy given by mean value of binary target."""
-    if not isinstance(raw_accuracy, list):
-        raw_accuracy = [raw_accuracy]
-    perc_accuracy = list(map(lambda x: (x - null_accuracy) / (1. - null_accuracy), raw_accuracy))
-    return perc_accuracy
-
+param_grid = {'n_estimators': range(50, 201, 25)}
+# pipe = Pipeline([('prepper', prepper), ('clf', classifier)])
+gsrch = GridSearchCV(estimator=classifier, param_grid=param_grid, scoring=make_scorer(f1_score), cv=cv)
 
 # %%
 acc = {}
 for word in most_common_words:
     gsrch.fit(predictors, targets[word])
-    acc[word] = (convert_accuracy(gsrch.best_score_, 1-targets[word].mean()), gsrch.best_estimator_)
+    acc[word] = (gsrch.cv_results_, gsrch.best_estimator_)
     print(word, acc[word][0])
+
+filepath = 'F:/Data/forest_results.pkl'
+with open(filepath, 'wb') as pklfile:
+    pickle.dump(acc, pklfile)
