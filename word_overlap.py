@@ -33,7 +33,7 @@ most_common_words = wordcounts[:50].index.unique()
 # TODO optimize
 present = {}
 for item in words_infood:
-    foodwords = map(str.lower, item)
+    foodwords = list(map(str.lower, item))
     for word in most_common_words:
         if word not in present:
             present[word] = []
