@@ -10,9 +10,9 @@ nutrients = utl.load_sql_table('nutrient')
 nutrients['id'] = nutrients['id'].astype('int64')
 quantities = utl.load_sql_table('quantity')
 qty = quantities.pivot_table(index='food_id', columns='nutrient_id', values='value', fill_value=0)
-# qty = qty.applymap(lambda x: np.nan if x == 0 else x)
-qty_cov = qty.cov(min_periods=1000).fillna(0).as_matrix()
-cov_norm = np.log10(1+np.abs(qty_cov)) * np.sign(qty_cov)
+
+qty_cov = qty.cov(min_periods=50).fillna(0).as_matrix()
+cov_norm = np.log10(1+np.abs(qty_cov)) * np.sign(qty_cov)  # normalize for visualization
 # %%
 matplotlib.rcParams.update({'font.size': 16})
 # fig, ax = plt.subplots(figsize=(12, 8))

@@ -12,11 +12,10 @@ foods = utl.load_sql_table('food')
 food_names = foods['name'].values
 words_infood = utl.split_into_words(food_names)
 all_words = map(str.lower, list(itertools.chain(*words_infood)))
-
 wordcounts = pd.Series(all_words).value_counts()
-# wordcounts.index = wordcounts.index.map(str.lower)
 unfun_words = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to']  # hand selected words to ignore due to lack of fun
 wordcounts.drop(unfun_words, inplace=True)
+
 # %% wordcount distribution
 # wordcounts.head(20)
 matplotlib.rcParams.update({'font.size': 16})
@@ -28,20 +27,20 @@ ax.set_ylabel('occurences')
 plt.show()
 
 # %%
-most_common_words = wordcounts[:50].index.unique()
-# food_wordlist = tuple(zip(foods['ndbno'], words_infood))
-# TODO optimize
-present = {}
-for item in words_infood:
-    foodwords = list(map(str.lower, item))
-    for word in most_common_words:
-        if word not in present:
-            present[word] = []
-        if word in foodwords:
-            present[word].append(1)
-        else:
-            present[word].append(0)
-word_df = pd.DataFrame(data=present, index=foods['ndbno'])
+nwords = 150
+word_df = utl.get_word_count_df(nwords)
+# most_common_words = wordcounts[:nwords].index.unique()
+# present = {}
+# for item in words_infood:
+#     foodwords = list(map(str.lower, item))
+#     for word in most_common_words:
+#         if word not in present:
+#             present[word] = []
+#         if word in foodwords:
+#             present[word].append(1)
+#         else:
+#             present[word].append(0)
+# word_df = pd.DataFrame(data=present, index=foods['ndbno'])
 # word_df = pd.DataFrame(data=np.zeros((len(food_wordlist), len(most_common_words))), columns=most_common_words, dtype='bool')
 # word_df.rename(foods['ndbno'], inplace=True)
 # for item in food_wordlist:
