@@ -1,12 +1,10 @@
 import requests
-import json
 import sqlite3
 import time
 import logging
 import sys
 
 logging.basicConfig(level=logging.INFO, handlers=[logging.FileHandler('fooditem_db.log'), logging.StreamHandler()])
-
 apikey = '0nDIJuT0aCiNbIiwxVIpAWRUKauc4EdLNQgSjUc1'
 
 list_url = 'https://api.nal.usda.gov/ndb/list'

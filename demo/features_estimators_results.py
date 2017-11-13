@@ -66,15 +66,15 @@ example_word = 'lean'
 clf = forest_clf[example_word][1]
 Xtrain, Xtest, ytrain, ytest = train_test_split(predictors, targets[example_word])
 clf.fit(Xtrain, ytrain)
-
 ypred = clf.predict(Xtest)
 print('test-data confusion matrix')
 print(confusion_matrix(ytest, ypred))
-#
+
 features = list(zip(clf.feature_importances_, nutrients['name']))
 features = sorted(features, key=lambda x: x[0], reverse=True)
 print('10 ten predictive nutrients for ' + example_word.join('\''*2))
 print(*['%0.3f, %s' % item for item in features[:10]], sep='\n')
+
 
 # %% plot decision surface of feature pairs
 matplotlib.rcParams.update({'font.size': 16})
@@ -98,5 +98,4 @@ for pair in ([0, 1], [0, 2], [1, 2]):
     plot_idx += 1
 
 plt.axis("tight")
-
 plt.show()

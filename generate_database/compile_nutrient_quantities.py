@@ -6,6 +6,7 @@ import sys
 
 
 def format_ndbno(no):
+    """Pad with zeros if ndbno only have 4 no's."""
     if len(str(no)) < 5:
         padsize = 5-len(str(no))
         pad = ['0' for _ in range(padsize)]
@@ -27,8 +28,6 @@ dbfile = 'F:/Data/nutrients_database.sqlite'
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
 itemrows = c.execute("SELECT * from food LEFT JOIN quantity ON food.ndbno = quantity.food_id WHERE quantity.food_id IS NULL").fetchall()
-# quantityrows = c.execute("SELECT food_id from quantity").fetchall()
-# loopid = quantityrows[-1][0]#ndbno of last food requested
 loopid = 0
 insert_query = 'INSERT OR IGNORE INTO quantity (food_id, nutrient_id, value, units) VALUES (?, ?, ?, ?)'
 try:
@@ -43,7 +42,6 @@ try:
             logging.warn('request error: http code {code}'.format(code=nutrient_report.status_code))
             keeprunning = False
         else:
-            # logging.info('item {i}'.format(i=ndbno))
             json_data = nutrient_report.json()
             json_data = json_data['report']['food']
             foodname = json_data['name']

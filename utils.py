@@ -28,8 +28,8 @@ def get_word_count_df(nwords=50):
     words_infood = split_into_words(food_names)
     all_words = map(str.lower, list(itertools.chain(*words_infood)))
     wordcounts = pd.Series(all_words).value_counts()
-    unfun_words = ['s', 'a', 'to']
-    # unfun_words = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to']  # hand selected words to ignore due to lack of fun
+    # unfun_words = ['s', 'a', 'to']
+    unfun_words = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to']  # hand selected words to ignore due to lack of fun
     wordcounts.drop(unfun_words, inplace=True)
     most_common_words = wordcounts[:nwords].index.unique()
     # TODO use sklearn CountVectorizer
