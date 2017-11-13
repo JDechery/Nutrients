@@ -3,6 +3,7 @@ import sqlite3
 import re
 import itertools
 
+
 def load_sql_table(tablename):
     """Load table from nutrients sql database."""
     dbfile = 'F:/Data/nutrients_database.sqlite'
@@ -27,7 +28,8 @@ def get_word_count_df(nwords=50):
     words_infood = split_into_words(food_names)
     all_words = map(str.lower, list(itertools.chain(*words_infood)))
     wordcounts = pd.Series(all_words).value_counts()
-    unfun_words = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to']  # hand selected words to ignore due to lack of fun
+    unfun_words = ['s', 'a', 'to']
+    # unfun_words = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to']  # hand selected words to ignore due to lack of fun
     wordcounts.drop(unfun_words, inplace=True)
     most_common_words = wordcounts[:nwords].index.unique()
     # TODO use sklearn CountVectorizer
@@ -52,13 +54,3 @@ def get_wordtargets_nutrientpredictors(nwords=50):
     targets = combined_data[word_counts.columns]
     predictors = combined_data[nutrient_amount.columns]
     return targets, predictors
-
-# def get_joined_df():
-#     """Lorem ipsum."""
-#     quantities = load_sql_table('quantity')
-#     nutrients = load_sql_table('nutrient')
-#     foods = load_sql_table('food')
-#
-#     nutrient_amount = quantities.pivot_table(index='food_id', columns='nutrient_id', values='value', fill_value=0)
-#     combined_data = nutrient_amount.join(word_counts, how='left')
-#     return combined_data

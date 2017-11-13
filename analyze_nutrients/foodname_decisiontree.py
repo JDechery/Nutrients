@@ -1,4 +1,4 @@
-# import pandas as pd
+import pandas as pd
 import Nutrients.utils as utl
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedKFold
@@ -51,12 +51,12 @@ import datetime
 # combined_data = nutrient_amount.join(wordPresence, how='left')
 # targets = combined_data[most_common_words]
 # predictors = combined_data[nutrient_amount.columns]
-targets, predictors = utl.get_wordtargets_nutrientpredictors(nwords=150)
+targets, predictors = utl.get_wordtargets_nutrientpredictors(nwords=25)
 
 # %% gridsearch for best random forest classifier (by f1_score)
 # prepper = MinMaxScaler()
 classifier = RandomForestClassifier(n_jobs=-1, random_state=123456)
-cv = StratifiedKFold(8)
+cv = StratifiedKFold(4)
 # param_grid = {'prepper__n_components': [75, 100], 'estimator__C': [.75, 1.]}
 param_grid = {'n_estimators': range(10, 211, 50), 'max_features': ['sqrt', None]}
 # pipe = Pipeline([('prepper', prepper), ('clf', classifier)])
