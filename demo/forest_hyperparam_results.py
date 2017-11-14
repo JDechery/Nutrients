@@ -32,7 +32,7 @@ results.columns = pd.MultiIndex.from_tuples(params, names=['params', 'count'])
 # %%
 matplotlib.rcParams.update({'font.size': 16})
 fig, axs = plt.subplots(nrows=3, figsize=(12, 8))
-plt.suptitle('random forest hyperparameter scores')
+plt.suptitle('tree hyperparameter scores')
 raw_plot = pd.concat([results.mean(), results.std()], axis=1)
 norm_plot = results.div(results.max(axis=1), axis=0)
 norm_plot = pd.concat([norm_plot.mean(), norm_plot.std()], axis=1)
@@ -47,6 +47,6 @@ for ii, param in enumerate(results.columns.levels[0]):
     axs[ii].set_ylim((0, 1))
 
 axs[0].legend(['score', 'normalized'], frameon=False)
-axs[1].set_xlabel('mean f1 score')
+axs[1].set_ylabel('mean f1 score')
 plt.subplots_adjust(hspace=.45, left=.25, right=.85)
 plt.show()

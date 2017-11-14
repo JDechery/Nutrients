@@ -17,7 +17,6 @@ unfun_words = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to']  # hand selec
 wordcounts.drop(unfun_words, inplace=True)
 
 # %% wordcount distribution
-# wordcounts.head(20)
 matplotlib.rcParams.update({'font.size': 16})
 fig, ax = plt.subplots(figsize=(12, 8))
 wordcounts.hist(bins=20)
@@ -29,23 +28,6 @@ plt.show()
 # %%
 nwords = 150
 word_df = utl.get_word_count_df(nwords)
-# most_common_words = wordcounts[:nwords].index.unique()
-# present = {}
-# for item in words_infood:
-#     foodwords = list(map(str.lower, item))
-#     for word in most_common_words:
-#         if word not in present:
-#             present[word] = []
-#         if word in foodwords:
-#             present[word].append(1)
-#         else:
-#             present[word].append(0)
-# word_df = pd.DataFrame(data=present, index=foods['ndbno'])
-# word_df = pd.DataFrame(data=np.zeros((len(food_wordlist), len(most_common_words))), columns=most_common_words, dtype='bool')
-# word_df.rename(foods['ndbno'], inplace=True)
-# for item in food_wordlist:
-#     words = map(str.lower, item[1])
-#     word_df.iloc[item[0]] = word_df.iloc[item[0]].isin(words)
 
 word_similarity = 1 - cdist(word_df.T, word_df.T, metric='jaccard')
 np.fill_diagonal(word_similarity, 0)

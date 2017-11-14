@@ -4,9 +4,6 @@ import numpy as np
 import scipy
 import pickle
 import matplotlib.pyplot as plt
-import matplotlib
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
 import seaborn as sns
 
 targets, predictors = utl.get_wordtargets_nutrientpredictors(nwords=150)

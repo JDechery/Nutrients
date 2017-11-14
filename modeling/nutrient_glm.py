@@ -2,7 +2,6 @@
 import pandas as pd
 import sqlite3
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.cross_validation import train_test_split
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.linear_model import LogisticRegression
 import numpy as np
@@ -58,7 +57,6 @@ nutrient_amount = quantities.pivot_table(index='food_id', columns='nutrient_id',
 combined_data = nutrient_amount.join(wordPresence, how='left')
 
 # %%
-# nut_train, nut_test, word_train, word_test = train_test_split(combined_data[nutrient_amount.columns], combined_data[most_common_words[0]], random_state=123456)
 predict_word = most_common_words[0]
 train_inds, test_inds = StratifiedShuffleSplit(n_splits=2, random_state=123456).split(np.zeros(len(combined_data)), combined_data[predict_word])
 nut_train, nut_test, word_train, word_test = combined_data[nutrient_amount.columns].iloc[train_inds[0]], \
@@ -72,8 +70,6 @@ nut_test_scaled = mms.transform(nut_test)
 
 logreg = LogisticRegression(penalty='l1', C=.25, random_state=123456, max_iter=1000, solver='saga', verbose=False, n_jobs=-1)
 logreg.fit(nut_train_scaled, word_train)
-# print('training: ', )
-# print('test: ', )
 print(predict_word)
 print(logreg.score(nut_train_scaled, word_train)-(1-word_train.mean()), logreg.score(nut_test_scaled, word_test)-(1-word_test.mean()))
 c = logreg.coef_
