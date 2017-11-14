@@ -38,8 +38,8 @@ norm_plot = results.div(results.max(axis=1), axis=0)
 norm_plot = pd.concat([norm_plot.mean(), norm_plot.std()], axis=1)
 for ii, param in enumerate(results.columns.levels[0]):
     npt = raw_plot.loc[param].shape[0]
-    raw_plot.loc[param][0].plot(x=range(npt), yerr=raw_plot.loc[param][1], ax=axs[ii])
-    norm_plot.loc[param][0].plot(yerr=norm_plot.loc[param][1], ax=axs[ii])
+    raw_plot.loc[param][0].plot(x=range(npt), yerr=raw_plot.loc[param][1], capsize=3, alpha=.8, ax=axs[ii])
+    norm_plot.loc[param][0].plot(yerr=norm_plot.loc[param][1], capsize=3, alpha=.8, ax=axs[ii])
     axs[ii].set_xlabel(param)
     axs[ii].set_xticks(range(npt))
     axs[ii].set_xticklabels(list(raw_plot.loc[param].index))

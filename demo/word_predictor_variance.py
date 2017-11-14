@@ -27,9 +27,6 @@ best_results.columns = ['term_prob', 'mean_score', 'std_score', 'max_features', 
 def get_nutrient_stats(group):
     column_p = group.apply(lambda x: np.mean(x > 0))
     column_var = group.apply(lambda x: np.var(x[x > 0]))
-    # return {'var': group.var().mean(),
-    #         'entropy': np.mean([scipy.stats.entropy([p, 1-p]) for p in column_p]),
-    #         'nonzero_var': np.mean(column_var)}
     return [group.var().mean(), np.mean([scipy.stats.entropy([p, 1-p]) for p in column_p]), np.mean(column_var)]
 
 
@@ -41,8 +38,6 @@ for word in targets.columns:
 stat_df = pd.concat([pd.DataFrame.from_dict(nutrient_stats, orient='index'), best_results['mean_score']], axis=1)
 stat_df.dropna(inplace=True)
 stat_df.columns = ['var', 'entropy', 'nonzero_var', 'mean_score']
-# stat_df['var'] = stat_df['var'].apply(lambda x: np.log10(np.abs(x)+1) * np.sign(x))
-# stat_df['nonzero_var'] = stat_df['nonzero_var'].apply(lambda x: np.log10(np.abs(x)+1) * np.sign(x))
 # %%
 sns.pairplot(stat_df)
 plt.show()

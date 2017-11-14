@@ -76,7 +76,7 @@ plt.xlabel('parameters (max_features, n_estimators)')
 plt.show()
 
 # %% best performing forest
-example_word = 'beverages'
+example_word = 'lean'
 clf = forest_clf[example_word][1]
 train_ind, test_ind = tuple(StratifiedShuffleSplit(n_splits=1).split(predictors, targets[example_word]))[0]
 Xtrain, Xtest, ytrain, ytest = predictors.iloc[train_ind, :],         \
@@ -94,7 +94,7 @@ print('10 ten predictive nutrients for ' + example_word.join('\''*2))
 print(*['%0.3f, %s' % item for item in features[:10]], sep='\n')
 
 
-# plot top 3 nutrient pairs
+# %% plot top 3 nutrient pairs
 matplotlib.rcParams.update({'font.size': 16})
 fig, axs = plt.subplots(ncols=3, figsize=(12, 6))
 

@@ -2,6 +2,7 @@ import pandas as pd
 import sqlite3
 import re
 import itertools
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 def load_sql_table(tablename):
@@ -19,6 +20,15 @@ def split_into_words(phrases):
     matchString = '[^\W\d]*'
     words = [list(filter(None, re.findall(matchString, name))) for name in phrases]
     return words
+
+
+def get_ngram_count(ncount):
+    foods = load_sql_table('food')
+    food_names = foods['name'].values
+    stopwords = ['upc', 's', 'with', 'and', 'in', 'a', 'gtin', 'to', 'of', 'or']  # hand selected words to ignore due to lack of fun
+    vect = CountVectorizer(ngram_range=(1, 3), binary=True, stop_words=stopwords, min_df=ncount, dtype='bool')
+    countvec = vect.fit_transform(food_names)
+    return vect.vocabulary_, countvec
 
 
 def get_word_count_df(nwords=50):
@@ -44,6 +54,18 @@ def get_word_count_df(nwords=50):
             else:
                 present[word].append(0)
     return pd.DataFrame(data=present, index=foods['ndbno'])
+
+
+def get_ngramtargets_nutrientpredictors(mincount=250):
+    quantities = load_sql_table('quantity')
+    foods = load_sql_table('food')
+    nutrient_amount = quantities.pivot_table(index='food_id', columns='nutrient_id', values='value', fill_value=0)
+    voc, counts = get_ngram_count(mincount)
+    word_counts = pd.DataFrame(data=counts.todense(), index=foods['ndbno'], columns=list(voc.keys()))
+    combined_data = nutrient_amount.join(word_counts, how='left')
+    targets = combined_data[word_counts.columns]
+    predictors = combined_data[nutrient_amount.columns]
+    return targets, predictors
 
 
 def get_wordtargets_nutrientpredictors(nwords=50):
